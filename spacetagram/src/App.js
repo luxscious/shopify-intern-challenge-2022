@@ -2,11 +2,11 @@ import "./App.css";
 import { AppBar, makeStyles } from "@material-ui/core";
 import bg from "./assets/bg.svg";
 import logo from "./assets/logo_white.svg";
-import { useEffect, useRef, useState } from "react";
-import { useAxios } from "use-axios-client";
+import { useCallback, useEffect, useRef, useState } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
 import Box from "@mui/material/Box";
 import axios from "axios";
+import Card from "./components/Card.js";
 const useStyles = makeStyles((theme) => ({
   container: {
     backgroundImage: `url(${bg})`,
@@ -19,6 +19,7 @@ const useStyles = makeStyles((theme) => ({
     height: "100%",
     position: "fixed",
     zIndex: -1,
+    overflow: "auto",
   },
   mask: {
     height: "100%",
@@ -30,10 +31,24 @@ const useStyles = makeStyles((theme) => ({
     zIndex: -1,
   },
   feed: {
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    width: "50%",
     height: "100%",
+    width: "100%",
+    display: "flex",
+    justifyContent: "center",
+    flexDirection: "column",
+    alignItems: "center",
+  },
+  items: {
+    display: "flex",
+    justifyContent: "center",
+    flexDirection: "column",
+    alignItems: "center",
+    alignSelf: "center",
     margin: "auto",
+    width: "50%",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    marginTop: 65,
+    paddingTop: 50,
   },
   bar: {
     backgroundColor: "black",
@@ -58,35 +73,50 @@ function subtractDays(date, days) {
   const day = temp.getDate();
   return year + "-" + month + "-" + day;
 }
+function RenderList(list) {
+  return list.map((x) => {
+    return <Card key={x.date} photo={x} />;
+  });
+}
 
-function App() {
+const App = () => {
   const classes = useStyles();
-  const [startDate, setStartDate] = useState("2012-01-01");
-  const [endDate, setEndDate] = useState("2012-01-01");
+
+  const [startDate, setStartDate] = useState();
+  const [endDate, setEndDate] = useState();
+  const [feed, setFeed] = useState([]);
+
   const url = `https://api.nasa.gov/planetary/apod?api_key=${process.env.REACT_APP_NASA_API_KEY}&start_date=${startDate}&end_date=${endDate}`;
+
   const [data, setData] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
-  const loadRef = useRef();
-  const fetchData = () => {
-    setLoading(true);
-    axios
-      .get(url)
-      .then((res) => {
-        setData(res.data);
-      })
-      .catch((err) => {
-        setError(err);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  };
 
-  const [feed, setFeed] = useState([]);
-  console.log(feed);
+  const loadRef = useRef(1);
+  const listInnerRef = useRef();
+
+  //Api call can timeout with too many posts, only do 9 posts at a time
   const posts = 9;
-  //Exessive loading, only do 10 dates at a time
+
+  const fetchData = useCallback(() => {
+    if (startDate && endDate) {
+      setLoading(true);
+      axios
+        .get(url)
+        .then((res) => {
+          setData(res.data);
+        })
+        .catch((err) => {
+          setError(err);
+        })
+        .finally(() => {
+          setLoading(false);
+          loadRef.current++;
+        });
+    }
+  }, [url]);
+
+  //initialize start and end states
   useEffect(() => {
     const end = new Date();
     const endYear = end.getFullYear();
@@ -95,33 +125,68 @@ function App() {
     const start = subtractDays(end, posts);
     setEndDate(endYear + "-" + endMonth + "-" + endDay);
     setStartDate(start);
-    loadRef.current = 1;
   }, []);
 
+  //update feed array whenever data is updated
   useEffect(() => {
     let array = feed;
-    for (let i = 0; i < data?.length; i++) {
-      array.push({
-        date: data[i].date,
-        title: data[i].title,
-        url: data[i].url,
-      });
+    for (let i = data?.length - 1; i >= 0; i--) {
+      const found = array.some((el) => el.date === data[i].date);
+      if (!found) {
+        array.push({
+          date: data[i].date,
+          title: data[i].title,
+          url: data[i].url,
+        });
+      }
     }
     setFeed(array);
   }, [data]);
-  useEffect(() => {
-    if (loadRef.current > 0) {
-      fetchData();
-    }
-  }, [startDate, endDate]);
 
+  //Fetch data whenever start date state changes
+  useEffect(() => {
+    fetchData();
+  }, [fetchData, startDate]);
+
+  //Load more posts
   const loadMore = () => {
+    const temp = new Date(startDate);
+    temp.setDate(temp.getDate() - 1);
+    const year = temp.getFullYear();
+    const month = temp.getMonth() + 1;
+    const day = temp.getDate();
+
+    //Set date to previous start date, decrease start date by posts
+    setEndDate(year + "-" + month + "-" + day);
     setStartDate(subtractDays(new Date(startDate), posts));
-    setEndDate(subtractDays(new Date(endDate), posts));
+  };
+
+  //loads more posts if user gets to bottom of page
+  const handleScroll = (e) => {
+    const el = document.querySelector("#container");
+    const scroll = el.scrollHeight - el.scrollTop;
+    const client = el.clientHeight;
+    const diff = Math.abs(parseInt(scroll - client));
+    const bottom = diff <= 2;
+    if (bottom) {
+      loadMore();
+    }
   };
   return (
     <>
-      <AppBar position="static" className={classes.bar}>
+      {!data ? (
+        <Box
+          sx={{
+            height: "80%",
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+          }}
+        >
+          <CircularProgress style={{ color: "white" }} />
+        </Box>
+      ) : null}
+      <AppBar position="fixed" className={classes.bar}>
         <a
           href="/"
           style={{
@@ -136,26 +201,21 @@ function App() {
           <img src={logo} alt="logo" className={classes.logo} />
         </a>
       </AppBar>
-      <div className={classes.container}>
+      <div id="container" className={classes.container} onScroll={handleScroll}>
         <div className={classes.mask}></div>
-        <div className={classes.feed}>
-          {loading ? (
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                height: "80%",
-              }}
-            >
-              <CircularProgress style={{ color: "white" }} />
-            </Box>
-          ) : null}
-          <button onClick={loadMore}>more</button>
+        <div className={classes.feedContainer}>
+          <div className={classes.items}>
+            {RenderList(feed)}
+            {loading && data ? (
+              <Box sx={{}}>
+                <CircularProgress style={{ color: "white" }} />
+              </Box>
+            ) : null}
+          </div>
         </div>
       </div>
     </>
   );
-}
+};
 
 export default App;
