@@ -94,7 +94,6 @@ const App = () => {
   const [loading, setLoading] = useState(true);
   const cookies = new Cookies();
   const loadRef = useRef(1);
-  const listInnerRef = useRef();
 
   //Api call can timeout with too many posts, only do 9 posts at a time
   const posts = 9;
