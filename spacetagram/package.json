@@ -2,7 +2,7 @@
   "name": "spacetagram",
   "version": "0.1.0",
   "private": true,
-  "homepage": "http://luxscious.github.io/shopify-intern-challenge-2022",
+  "homepage": "http://luxscious.github.io/spacetagram",
   "dependencies": {
     "@emotion/react": "^11.7.1",
     "@emotion/styled": "^11.6.0",
