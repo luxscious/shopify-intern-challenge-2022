@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/shopify-intern-challenge-2022/static/css/main.06670373.css",
+    "main.js": "/shopify-intern-challenge-2022/static/js/main.7067d8c1.js",
+    "static/media/bg.svg": "/shopify-intern-challenge-2022/static/media/bg.14aafa6c2104501f97dfa352fcbdfcf4.svg",
+    "static/media/logo_white.svg": "/shopify-intern-challenge-2022/static/media/logo_white.e050ed1e61c4a745af5c43073c1a6c0d.svg",
+    "index.html": "/shopify-intern-challenge-2022/index.html",
+    "main.06670373.css.map": "/shopify-intern-challenge-2022/static/css/main.06670373.css.map",
+    "main.7067d8c1.js.map": "/shopify-intern-challenge-2022/static/js/main.7067d8c1.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.06670373.css",
+    "static/js/main.7067d8c1.js"
+  ]
+}
