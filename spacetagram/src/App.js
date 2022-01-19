@@ -7,12 +7,13 @@ import CircularProgress from "@mui/material/CircularProgress";
 import Box from "@mui/material/Box";
 import axios from "axios";
 import Card from "./components/Card.js";
+import Cookies from "universal-cookie";
 const useStyles = makeStyles((theme) => ({
   container: {
     backgroundImage: `url(${bg})`,
     backgroundPosition: "center",
     backgroundRepeat: "no-repeat",
-    backgroundSize: "cover ",
+    backgroundSize: "cover",
     margin: 0,
     padding: 0,
     width: "100%",
@@ -45,8 +46,9 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     alignSelf: "center",
     margin: "auto",
-    width: "50%",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    maxWidth: 500,
+    // padding: 200,
+    backgroundColor: "rgba(0, 0,0)",
     marginTop: 65,
     paddingTop: 50,
   },
@@ -85,19 +87,17 @@ const App = () => {
   const [startDate, setStartDate] = useState();
   const [endDate, setEndDate] = useState();
   const [feed, setFeed] = useState([]);
-
   const url = `https://api.nasa.gov/planetary/apod?api_key=${process.env.REACT_APP_NASA_API_KEY}&start_date=${startDate}&end_date=${endDate}`;
 
   const [data, setData] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
-
+  const cookies = new Cookies();
   const loadRef = useRef(1);
   const listInnerRef = useRef();
 
   //Api call can timeout with too many posts, only do 9 posts at a time
   const posts = 9;
-
   const fetchData = useCallback(() => {
     if (startDate && endDate) {
       setLoading(true);
@@ -125,6 +125,10 @@ const App = () => {
     const start = subtractDays(end, posts);
     setEndDate(endYear + "-" + endMonth + "-" + endDay);
     setStartDate(start);
+
+    if (!cookies.get("liked")) {
+      cookies.set("liked", [], { path: "/" });
+    }
   }, []);
 
   //update feed array whenever data is updated
@@ -203,16 +207,18 @@ const App = () => {
       </AppBar>
       <div id="container" className={classes.container} onScroll={handleScroll}>
         <div className={classes.mask}></div>
-        <div className={classes.feedContainer}>
-          <div className={classes.items}>
-            {RenderList(feed)}
-            {loading && data ? (
-              <Box sx={{}}>
-                <CircularProgress style={{ color: "white" }} />
-              </Box>
-            ) : null}
+        {data ? (
+          <div className={classes.feedContainer}>
+            <div className={classes.items}>
+              {RenderList(feed)}
+              {loading && data ? (
+                <Box sx={{}}>
+                  <CircularProgress style={{ color: "white" }} />
+                </Box>
+              ) : null}
+            </div>
           </div>
-        </div>
+        ) : null}
       </div>
     </>
   );
