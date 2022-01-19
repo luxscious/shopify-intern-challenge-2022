@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/shopify-intern-challenge-2022/static/css/main.06670373.css",
-    "main.js": "/shopify-intern-challenge-2022/static/js/main.7067d8c1.js",
-    "static/media/bg.svg": "/shopify-intern-challenge-2022/static/media/bg.14aafa6c2104501f97dfa352fcbdfcf4.svg",
-    "static/media/logo_white.svg": "/shopify-intern-challenge-2022/static/media/logo_white.e050ed1e61c4a745af5c43073c1a6c0d.svg",
-    "index.html": "/shopify-intern-challenge-2022/index.html",
-    "main.06670373.css.map": "/shopify-intern-challenge-2022/static/css/main.06670373.css.map",
-    "main.7067d8c1.js.map": "/shopify-intern-challenge-2022/static/js/main.7067d8c1.js.map"
+    "main.css": "/spacetagram/static/css/main.06670373.css",
+    "main.js": "/spacetagram/static/js/main.fad3e31f.js",
+    "static/media/bg.svg": "/spacetagram/static/media/bg.aafe9756430cca86fe8ad4ccec8a4636.svg",
+    "static/media/logo_white.svg": "/spacetagram/static/media/logo_white.018c4679ebddf29f33f9f67c0ead3c12.svg",
+    "index.html": "/spacetagram/index.html",
+    "main.06670373.css.map": "/spacetagram/static/css/main.06670373.css.map",
+    "main.fad3e31f.js.map": "/spacetagram/static/js/main.fad3e31f.js.map"
   },
   "entrypoints": [
     "static/css/main.06670373.css",
-    "static/js/main.7067d8c1.js"
+    "static/js/main.fad3e31f.js"
   ]
 }
