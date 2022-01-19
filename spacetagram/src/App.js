@@ -191,7 +191,7 @@ const App = () => {
       ) : null}
       <AppBar position="fixed" className={classes.bar}>
         <a
-          href="/"
+          href={process.env.PUBLIC_URL}
           style={{
             display: "flex",
             flexDirection: "row",
